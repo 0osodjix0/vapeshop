@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог товаров</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        function loadProducts() {
+            fetch("http://127.0.0.1:8080/products")
+                .then(response => response.json())
+                .then(data => {
+                    let list = document.getElementById("product-list");
+                    list.innerHTML = "";
+                    data.forEach(product => {
+                        let item = document.createElement("li");
+                        item.innerHTML = <strong>${product.name}</strong> - ${product.price} $<br>${product.description};
+                        list.appendChild(item);
+                    });
+                });
+        }
+
+        function addProduct() {
+            let name = document.getElementById("name").value;
+            let price = parseFloat(document.getElementById("price").value);
+            let description = document.getElementById("description").value;
+
+            fetch("http://127.0.0.1:8080/products", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, price, description })
+            }).then(() => loadProducts());
+        }
+    </script>
+</head>
+<body onload="loadProducts()">
+    <h1>Каталог товаров</h1>
+    <ul id="product-list"></ul>
+    <h2>Добавить товар</h2>
+    <input type="text" id="name" placeholder="Название"><br>
+    <input type="number" id="price" placeholder="Цена"><br>
+    <input type="text" id="description" placeholder="Описание"><br>
+    <button onclick="addProduct()">Добавить</button>
+</body>
+</html>
+index.html
